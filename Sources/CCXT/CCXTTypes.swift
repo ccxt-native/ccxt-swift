@@ -33,6 +33,13 @@ public struct MarketMarginModes {
     public var isolated: Bool
     public var cross: Bool
 }
+public struct MarketLimits {
+    public var amount: MinMax
+    public var cost: MinMax
+    public var leverage: MinMax
+    public var price: MinMax
+    public var market: MinMax
+}
 public struct MarketInterface {
     public var id: String?
     public var numericId: Double?
@@ -44,8 +51,8 @@ public struct MarketInterface {
     public var baseId: String?
     public var quoteId: String?
     public var active: Bool?
-    public var type: String
-    public var subType: String?
+    public var type: MarketType
+    public var subType: SubType
     public var spot: Bool
     public var margin: Bool
     public var swap: Bool
@@ -74,14 +81,7 @@ public struct MarketInterface {
         public var cost: Double?
     }
     public var marginModes: MarketMarginModes
-    public var limits: Limits
-    public struct Limits {
-        public var amount: MinMax
-        public var cost: MinMax
-        public var leverage: MinMax
-        public var price: MinMax
-        public var market: MinMax
-    }
+    public var limits: MarketLimits
     public var created: Int?
     public var info: Any
 }
@@ -195,10 +195,7 @@ public struct CurrencyInterface {
             public var max: Double?
         }
     }
-    public var networks: Networks
-    public struct Networks {
-        public var string: Any
-    }
+    public var networks: [String: Any]
     public var info: Any
 }
 public struct Balance {
@@ -386,12 +383,12 @@ public struct Liquidation {
     public var price: Double
     public var baseValue: Double
     public var quoteValue: Double
-    public var side: String?
+    public var side: OrderSide
 }
 public struct OrderRequest {
     public var symbol: String
-    public var type: String
-    public var side: String?
+    public var type: OrderType
+    public var side: OrderSide
     public var amount: Double
     public var price: Double?
     public var params: Any
@@ -475,7 +472,7 @@ public struct LastPrice {
     public var timestamp: Double
     public var datetime: String
     public var price: Double
-    public var side: String?
+    public var side: OrderSide
     public var info: Any
 }
 public struct Leverage {
@@ -546,3 +543,35 @@ public struct BaseConstructorArgs {
     public var headers: [String: Any]
 }
 public typealias ConstructorArgs = BaseConstructorArgs
+public struct Status {
+    public var status: String?
+    public var updated: Double?
+    public var eta: Double?
+    public var url: String?
+    public var info: Any
+}
+public struct RequiredCredentials {
+    public var apiKey: Bool?
+    public var secret: Bool?
+    public var uid: Bool?
+    public var login: Bool?
+    public var password: Bool?
+}
+public struct Urls {
+    public var logo: String?
+    public var api: Any
+    public var apiBackup: Any
+    public var test: Any
+    public var www: String?
+    public var doc: Strings
+    public var apiManagement: String?
+    public var fees: String?
+    public var referral: Any
+}
+public struct Precision {
+    public var amount: Double?
+    public var price: Double?
+    public var cost: Double?
+    public var base: Double?
+    public var quote: Double?
+}
