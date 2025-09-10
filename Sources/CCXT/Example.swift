@@ -571,362 +571,362 @@ struct ContentView: View {
                     }
                     Button("getAccountsById"){
                         Task {
-                            await getAccountsById()
+                            getAccountsById()
                         }
                     }
                     Button("getAlias"){
                         Task {
-                            await getAlias()
+                            getAlias()
                         }
                     }
                     Button("getApi"){
                         Task {
-                            await getApi()
+                            getApi()
                         }
                     }
                     Button("getBalance"){
                         Task {
-                            await getBalance()
+                            getBalance()
                         }
                     }
                     Button("getBaseCurrencies"){
                         Task {
-                            await getBaseCurrencies()
+                            getBaseCurrencies()
                         }
                     }
                     Button("getBidsasks"){
                         Task {
-                            await getBidsasks()
+                            getBidsasks()
                         }
                     }
                     Button("getClients"){
                         Task {
-                            await getClients()
+                            getClients()
                         }
                     }
                     Button("getCodes"){
                         Task {
-                            await getCodes()
+                            getCodes()
                         }
                     }
                     Button("getCommonCurrencies"){
                         Task {
-                            await getCommonCurrencies()
+                            getCommonCurrencies()
                         }
                     }
                     Button("getCurrencies_by_id"){
                         Task {
-                            await getCurrencies_by_id()
+                            getCurrencies_by_id()
                         }
                     }
                     Button("getCurrencies"){
                         Task {
-                            await getCurrencies()
+                            getCurrencies()
                         }
                     }
                     Button("getExceptions"){
                         Task {
-                            await getExceptions()
+                            getExceptions()
                         }
                     }
                     Button("getFeatures"){
                         Task {
-                            await getFeatures()
+                            getFeatures()
                         }
                     }
                     Button("getFees"){
                         Task {
-                            await getFees()
+                            getFees()
                         }
                     }
                     Button("getFundingRates"){
                         Task {
-                            await getFundingRates()
+                            getFundingRates()
                         }
                     }
                     Button("getHas"){
                         Task {
-                            await getHas()
+                            getHas()
                         }
                     }
                     Button("getHostname"){
                         Task {
-                            await getHostname()
+                            getHostname()
                         }
                     }
                     Button("getHttpExceptions"){
                         Task {
-                            await getHttpExceptions()
+                            getHttpExceptions()
                         }
                     }
                     Button("getHttpProxyAgentModule"){
                         Task {
-                            await getHttpProxyAgentModule()
+                            getHttpProxyAgentModule()
                         }
                     }
                     Button("getHttpsProxyAgentModule"){
                         Task {
-                            await getHttpsProxyAgentModule()
+                            getHttpsProxyAgentModule()
                         }
                     }
                     Button("getId"){
                         Task {
-                            await getId()
+                            getId()
                         }
                     }
                     Button("getIds"){
                         Task {
-                            await getIds()
+                            getIds()
                         }
                     }
                     Button("getIsSandboxModeEnabled"){
                         Task {
-                            await getIsSandboxModeEnabled()
+                            getIsSandboxModeEnabled()
                         }
                     }
                     Button("getLast_http_response"){
                         Task {
-                            await getLast_http_response()
+                            getLast_http_response()
                         }
                     }
                     Button("getLast_request_body"){
                         Task {
-                            await getLast_request_body()
+                            getLast_request_body()
                         }
                     }
                     Button("getLast_request_headers"){
                         Task {
-                            await getLast_request_headers()
+                            getLast_request_headers()
                         }
                     }
                     Button("getLast_request_url"){
                         Task {
-                            await getLast_request_url()
+                            getLast_request_url()
                         }
                     }
                     Button("getLimits"){
                         Task {
-                            await getLimits()
+                            getLimits()
                         }
                     }
                     Button("getLiquidations"){
                         Task {
-                            await getLiquidations()
+                            getLiquidations()
                         }
                     }
                     Button("getLogin"){
                         Task {
-                            await getLogin()
+                            getLogin()
                         }
                     }
                     Button("getMarkets_by_id"){
                         Task {
-                            await getMarkets_by_id()
+                            getMarkets_by_id()
                         }
                     }
                     Button("getMarkets"){
                         Task {
-                            await getMarkets()
+                            getMarkets()
                         }
                     }
                     Button("getMAX_VALUE"){
                         Task {
-                            await getMAX_VALUE()
+                            getMAX_VALUE()
                         }
                     }
                     Button("getMyLiquidations"){
                         Task {
-                            await getMyLiquidations()
+                            getMyLiquidations()
                         }
                     }
                     Button("getMyTrades"){
                         Task {
-                            await getMyTrades()
+                            getMyTrades()
                         }
                     }
                     Button("getName"){
                         Task {
-                            await getName()
+                            getName()
                         }
                     }
                     Button("getNewUpdates"){
                         Task {
-                            await getNewUpdates()
+                            getNewUpdates()
                         }
                     }
                     Button("getOhlcvs"){
                         Task {
-                            await getOhlcvs()
+                            getOhlcvs()
                         }
                     }
                     Button("getOptions"){
                         Task {
-                            await getOptions()
+                            getOptions()
                         }
                     }
                     Button("getOrderbooks"){
                         Task {
-                            await getOrderbooks()
+                            getOrderbooks()
                         }
                     }
                     Button("getOrders"){
                         Task {
-                            await getOrders()
+                            getOrders()
                         }
                     }
                     Button("getPositions"){
                         Task {
-                            await getPositions()
+                            getPositions()
                         }
                     }
                     Button("getPrecision"){
                         Task {
-                            await getPrecision()
+                            getPrecision()
                         }
                     }
                     Button("getProxyDictionaries"){
                         Task {
-                            await getProxyDictionaries()
+                            getProxyDictionaries()
                         }
                     }
                     Button("getQuoteCurrencies"){
                         Task {
-                            await getQuoteCurrencies()
+                            getQuoteCurrencies()
                         }
                     }
                     Button("getRateLimit"){
                         Task {
-                            await getRateLimit()
+                            getRateLimit()
                         }
                     }
                     Button("getReduceFees"){
                         Task {
-                            await getReduceFees()
+                            getReduceFees()
                         }
                     }
                     Button("getRequiredCredentials"){
                         Task {
-                            await getRequiredCredentials()
+                            getRequiredCredentials()
                         }
                     }
                     Button("getReturnResponseHeaders"){
                         Task {
-                            await getReturnResponseHeaders()
+                            getReturnResponseHeaders()
                         }
                     }
                     Button("getSocksProxyAgentModule"){
                         Task {
-                            await getSocksProxyAgentModule()
+                            getSocksProxyAgentModule()
                         }
                     }
                     Button("getSocksProxyAgentModuleChecked"){
                         Task {
-                            await getSocksProxyAgentModuleChecked()
+                            getSocksProxyAgentModuleChecked()
                         }
                     }
                     Button("getSubstituteCommonCurrencyCodes"){
                         Task {
-                            await getSubstituteCommonCurrencyCodes()
+                            getSubstituteCommonCurrencyCodes()
                         }
                     }
                     Button("getSymbols"){
                         Task {
-                            await getSymbols()
+                            getSymbols()
                         }
                     }
                     Button("getThrottler"){
                         Task {
-                            await getThrottler()
+                            getThrottler()
                         }
                     }
                     Button("getTickers"){
                         Task {
-                            await getTickers()
+                            getTickers()
                         }
                     }
                     Button("getTimeframes"){
                         Task {
-                            await getTimeframes()
+                            getTimeframes()
                         }
                     }
                     Button("getToken"){
                         Task {
-                            await getToken()
+                            getToken()
                         }
                     }
                     Button("getTokenBucket"){
                         Task {
-                            await getTokenBucket()
+                            getTokenBucket()
                         }
                     }
                     Button("getTrades"){
                         Task {
-                            await getTrades()
+                            getTrades()
                         }
                     }
                     Button("getTransactions"){
                         Task {
-                            await getTransactions()
+                            getTransactions()
                         }
                     }
                     Button("getTriggerOrders"){
                         Task {
-                            await getTriggerOrders()
+                            getTriggerOrders()
                         }
                     }
                     Button("getUrls"){
                         Task {
-                            await getUrls()
+                            getUrls()
                         }
                     }
                     Button("getUserAgent"){
                         Task {
-                            await getUserAgent()
+                            getUserAgent()
                         }
                     }
                     Button("getUserAgents"){
                         Task {
-                            await getUserAgents()
+                            getUserAgents()
                         }
                     }
                     Button("getVersion"){
                         Task {
-                            await getVersion()
+                            getVersion()
                         }
                     }
                     Button("setApiKey"){
                         Task {
-                            await setApiKey()
+                            setApiKey()
                         }
                     }
                     Button("setSecret"){
                         Task {
-                            await setSecret()
+                            setSecret()
                         }
                     }
                     Button("setTimeout"){
                         Task {
-                            await setTimeout()
+                            setTimeout()
                         }
                     }
                     Button("setTwofa"){
                         Task {
-                            await setTwofa()
+                            setTwofa()
                         }
                     }
                     Button("setUid"){
                         Task {
-                            await setUid()
+                            setUid()
                         }
                     }
                     Button("setVerbose"){
                         Task {
-                            await setVerbose()
+                            setVerbose()
                         }
                     }
                     Button("setWalletAddress"){
                         Task {
-                            await setWalletAddress()
+                            setWalletAddress()
                         }
                     }
                     //                Button("createConvertTrade"){
@@ -958,7 +958,7 @@ struct ContentView: View {
 
     func fetchTickers() async {
         do {
-            let tickers = try await self.exchange.fetchTickers(symbols: [spotSymbol, "BTC/USDT"])
+            let tickers = try await self.exchange.fetchTickers(symbols: [futuresSymbol, futuresSymbol])
             print(tickers)
         } catch {
             print(error.localizedDescription)
@@ -1020,7 +1020,7 @@ struct ContentView: View {
     }
     func borrowIsolatedMargin() async {
          do {
-             let response = try await self.exchange.borrowIsolatedMargin(symbol: spotSymbol, code: "USDT", amount: 1)
+             let response = try await self.exchange.borrowIsolatedMargin(symbol: futuresSymbol, code: "USDT", amount: 1)
              print(response)
          } catch {
              print(error.localizedDescription)
@@ -1381,7 +1381,7 @@ struct ContentView: View {
     }
     func fetchIsolatedBorrowRate() async {
          do {
-             let response = try await self.exchange.fetchIsolatedBorrowRate(symbol: spotSymbol)
+             let response = try await self.exchange.fetchIsolatedBorrowRate(symbol: futuresSymbol)
              print(response)
          } catch {
              print(error.localizedDescription)
@@ -1389,7 +1389,7 @@ struct ContentView: View {
     }
     func fetchL2OrderBook() async {
          do {
-             let response = try await self.exchange.fetchL2OrderBook(symbol: spotSymbol)
+             let response = try await self.exchange.fetchL2OrderBook(symbol: futuresSymbol)
              print(response)
          } catch {
              print(error.localizedDescription)
@@ -1461,8 +1461,8 @@ struct ContentView: View {
     }
     func fetchOHLCV() async {
          do {
-             let response = try await self.exchange.fetchOHLCV(symbol: spotSymbol, timeframe: "1h", since: 1748736000000, limit: 1)
-             let markResponse = try await self.exchange.fetchOHLCV(symbol: spotSymbol, timeframe: "1h", since: 1748736000000, limit: 1, params: ["price": "mark"])
+             let response = try await self.exchange.fetchOHLCV(symbol: futuresSymbol, timeframe: "1h", since: 1748736000000, limit: 1)
+             let markResponse = try await self.exchange.fetchOHLCV(symbol: futuresSymbol, timeframe: "1h", since: 1748736000000, limit: 1, params: ["price": "mark"])
              print(response)
              print(markResponse)
          } catch {
@@ -1536,7 +1536,7 @@ struct ContentView: View {
     }
     func fetchTicker() async {
          do {
-             let response = try await self.exchange.fetchTicker(symbol: spotSymbol)
+             let response = try await self.exchange.fetchTicker(symbol: futuresSymbol)
              print(response)
          } catch {
              print(error.localizedDescription)
@@ -1663,7 +1663,7 @@ struct ContentView: View {
     func watchOHLCV() async {
         while true {
             do {
-                let response = try await self.exchange.watchOHLCV(symbol: "BTC/USDT")
+                let response = try await self.exchange.watchOHLCV(symbol: futuresSymbol)
                 print(response)
             } catch {
                 // handle errors
@@ -1674,7 +1674,7 @@ struct ContentView: View {
     func watchOrderBook() async {
         while true {
             do {
-                let response = try await self.exchange.watchOrderBook(symbol: "BTC/USDT")
+                let response = try await self.exchange.watchOrderBook(symbol: futuresSymbol)
                 print(response)
             } catch {
                 // handle errors
@@ -1696,7 +1696,7 @@ struct ContentView: View {
     func watchOrderBookForSymbols() async {
         while true {
             do {
-                let response = try await self.exchange.watchOrderBookForSymbols(symbols: ["BTC/USDT"]) 
+                let response = try await self.exchange.watchOrderBookForSymbols(symbols: [futuresSymbol]) 
                 print(response)
             } catch {
                 // handle errors
@@ -1729,7 +1729,7 @@ struct ContentView: View {
     func watchTicker() async {
         while true {
             do {
-                let response = try await self.exchange.watchTicker(symbol: "BTC/USDT")
+                let response = try await self.exchange.watchTicker(symbol: futuresSymbol)
                 print(response)
             } catch {
                 // handle errors
@@ -1740,7 +1740,7 @@ struct ContentView: View {
     func watchTickers() async {
         while true {
             do {
-                let response = try await self.exchange.watchTickers(symbols: ["BTC/USDT"]) 
+                let response = try await self.exchange.watchTickers(symbols: [futuresSymbol]) 
                 print(response)
             } catch {
                 // handle errors
@@ -1751,7 +1751,7 @@ struct ContentView: View {
     func watchTrades() async {
         while true {
             do {
-                let response = try await self.exchange.watchTrades(symbol: "BTC/USDT")
+                let response = try await self.exchange.watchTrades(symbol: futuresSymbol)
                 print(response)
             } catch {
                 // handle errors
@@ -1762,7 +1762,7 @@ struct ContentView: View {
     func watchTradesForSymbols() async {
         while true {
             do {
-                let response = try await self.exchange.watchTradesForSymbols(symbols: ["BTC/USDT"]) 
+                let response = try await self.exchange.watchTradesForSymbols(symbols: [futuresSymbol]) 
                 print(response)
             } catch {
                 // handle errors
@@ -1772,7 +1772,7 @@ struct ContentView: View {
     }
     func unWatchOrderBook() async {
         do {
-            let response = try await self.exchange.unWatchOrderBook (symbol: "BTC/USDT")
+            let response = try await self.exchange.unWatchOrderBook (symbol: futuresSymbol)
             print(response)
         } catch {
             print(error.localizedDescription)
@@ -1780,7 +1780,7 @@ struct ContentView: View {
     }
     func unWatchOrders() async {
         do {
-            let response = try await self.exchange.unWatchOrders (symbol: "BTC/USDT")
+            let response = try await self.exchange.unWatchOrders (symbol: futuresSymbol)
             print(response)
         } catch {
             print(error.localizedDescription)
@@ -1788,7 +1788,7 @@ struct ContentView: View {
     }
     // func unWatchTicker() async {
     //     do {
-    //         let response = try await self.exchange.unWatchTicker (symbol: "BTC/USDT")
+    //         let response = try await self.exchange.unWatchTicker (symbol: futuresSymbol)
     //         print(response)
     //     } catch {
     //         print(error.localizedDescription)
@@ -1796,7 +1796,7 @@ struct ContentView: View {
     // }
     func unWatchTrades() async {
         do {
-            let response = try await self.exchange.unWatchTrades (symbol: "BTC/USDT")
+            let response = try await self.exchange.unWatchTrades (symbol: futuresSymbol)
             print(response)
         } catch {
             print(error.localizedDescription)
@@ -1811,199 +1811,199 @@ struct ContentView: View {
          }
     }
     func getAccountsById() {
-        print(try? self.exchange.accountsById)
+        print(self.exchange.accountsById)
     }
     func getAlias() {
-        print(try? self.exchange.alias)
+        print(try self.exchange.alias)
     }
     func getApi() {
-        print(try? self.exchange.api)
+        print(try self.exchange.api)
     }
     func getBalance() {
-        print(try? self.exchange.balance)
+        print(try self.exchange.balance)
     }
     func getBaseCurrencies() {
-        print(try? self.exchange.baseCurrencies)
+        print(try self.exchange.baseCurrencies)
     }
     func getBidsasks() {
-        print(try? self.exchange.bidsasks)
+        print(try self.exchange.bidsasks)
     }
     func getClients() {
-        print(try? self.exchange.clients)
+        print(try self.exchange.clients)
     }
     func getCodes() {
-        print(try? self.exchange.codes)
+        print(try self.exchange.codes)
     }
     func getCommonCurrencies() {
-        print(try? self.exchange.commonCurrencies)
+        print(try self.exchange.commonCurrencies)
     }
     func getCurrencies_by_id() {
-        print(try? self.exchange.currencies_by_id)
+        print(try self.exchange.currencies_by_id)
     }
     func getCurrencies() {
-        print(try? self.exchange.currencies)
+        print(try self.exchange.currencies)
     }
     func getExceptions() {
-        print(try? self.exchange.exceptions)
+        print(try self.exchange.exceptions)
     }
     func getFeatures() {
-        print(try? self.exchange.features)
+        print(try self.exchange.features)
     }
     func getFees() {
-        print(try? self.exchange.fees)
+        print(try self.exchange.fees)
     }
     func getFundingRates() {
-        print(try? self.exchange.fundingRates)
+        print(try self.exchange.fundingRates)
     }
     func getHas() {
-        print(try? self.exchange.has)
+        print(try self.exchange.has)
     }
     func getHostname() {
-        print(try? self.exchange.hostname)
+        print(try self.exchange.hostname)
     }
     func getHttpExceptions() {
-        print(try? self.exchange.httpExceptions)
+        print(try self.exchange.httpExceptions)
     }
     func getHttpProxyAgentModule() {
-        print(try? self.exchange.httpProxyAgentModule)
+        print(try self.exchange.httpProxyAgentModule)
     }
     func getHttpsProxyAgentModule() {
-        print(try? self.exchange.httpsProxyAgentModule)
+        print(try self.exchange.httpsProxyAgentModule)
     }
     func getId() {
-        print(try? self.exchange.id)
+        print(try self.exchange.id)
     }
     func getIds() {
-        print(try? self.exchange.ids)
+        print(try self.exchange.ids)
     }
     func getIsSandboxModeEnabled() {
-        print(try? self.exchange.isSandboxModeEnabled)
+        print(try self.exchange.isSandboxModeEnabled)
     }
     func getLast_http_response() {
-        print(try? self.exchange.last_http_response)
+        print(try self.exchange.last_http_response)
     }
     func getLast_request_body() {
-        print(try? self.exchange.last_request_body)
+        print(try self.exchange.last_request_body)
     }
     func getLast_request_headers() {
-        print(try? self.exchange.last_request_headers)
+        print(try self.exchange.last_request_headers)
     }
     func getLast_request_url() {
-        print(try? self.exchange.last_request_url)
+        print(try self.exchange.last_request_url)
     }
     func getLimits() {
-        print(try? self.exchange.limits)
+        print(try self.exchange.limits)
     }
     func getLiquidations() {
-        print(try? self.exchange.liquidations)
+        print(try self.exchange.liquidations)
     }
     func getLogin() {
-        print(try? self.exchange.login)
+        print(try self.exchange.login)
     }
     func getMarkets_by_id() {
-        print(try? self.exchange.markets_by_id)
+        print(try self.exchange.markets_by_id)
     }
     func getMarkets() {
-        print(try? self.exchange.markets)
+        print(try self.exchange.markets)
     }
     func getMAX_VALUE() {
-        print(try? self.exchange.MAX_VALUE)
+        print(try self.exchange.MAX_VALUE)
     }
     func getMyLiquidations() {
-        print(try? self.exchange.myLiquidations)
+        print(try self.exchange.myLiquidations)
     }
     func getMyTrades() {
-        print(try? self.exchange.myTrades)
+        print(try self.exchange.myTrades)
     }
     func getName() {
-        print(try? self.exchange.name)
+        print(try self.exchange.name)
     }
     func getNewUpdates() {
-        print(try? self.exchange.newUpdates)
+        print(try self.exchange.newUpdates)
     }
     func getOhlcvs() {
-        print(try? self.exchange.ohlcvs)
+        print(try self.exchange.ohlcvs)
     }
     func getOptions() {
-        print(try? self.exchange.options)
+        print(try self.exchange.options)
     }
     func getOrderbooks() {
-        print(try? self.exchange.orderbooks)
+        print(try self.exchange.orderbooks)
     }
     func getOrders() {
-        print(try? self.exchange.orders)
+        print(try self.exchange.orders)
     }
     func getPositions() {
-        print(try? self.exchange.positions)
+        print(try self.exchange.positions)
     }
     func getPrecision() {
-        print(try? self.exchange.precision)
+        print(try self.exchange.precision)
     }
     func getProxyDictionaries() {
-        print(try? self.exchange.proxyDictionaries)
+        print(try self.exchange.proxyDictionaries)
     }
     func getQuoteCurrencies() {
-        print(try? self.exchange.quoteCurrencies)
+        print(try self.exchange.quoteCurrencies)
     }
     func getRateLimit() {
-        print(try? self.exchange.rateLimit)
+        print(try self.exchange.rateLimit)
     }
     func getReduceFees() {
-        print(try? self.exchange.reduceFees)
+        print(try self.exchange.reduceFees)
     }
     func getRequiredCredentials() {
-        print(try? self.exchange.requiredCredentials)
+        print(try self.exchange.requiredCredentials)
     }
     func getReturnResponseHeaders() {
-        print(try? self.exchange.returnResponseHeaders)
+        print(try self.exchange.returnResponseHeaders)
     }
     func getSocksProxyAgentModule() {
-        print(try? self.exchange.socksProxyAgentModule)
+        print(try self.exchange.socksProxyAgentModule)
     }
     func getSocksProxyAgentModuleChecked() {
-        print(try? self.exchange.socksProxyAgentModuleChecked)
+        print(try self.exchange.socksProxyAgentModuleChecked)
     }
     func getSubstituteCommonCurrencyCodes() {
-        print(try? self.exchange.substituteCommonCurrencyCodes)
+        print(try self.exchange.substituteCommonCurrencyCodes)
     }
     func getSymbols() {
-        print(try? self.exchange.symbols)
+        print(try self.exchange.symbols)
     }
     func getThrottler() {
-        print(try? self.exchange.throttler)
+        print(try self.exchange.throttler)
     }
     func getTickers() {
-        print(try? self.exchange.tickers)
+        print(try self.exchange.tickers)
     }
     func getTimeframes() {
-        print(try? self.exchange.timeframes)
+        print(try self.exchange.timeframes)
     }
     func getToken() {
-        print(try? self.exchange.token)
+        print(try self.exchange.token)
     }
     func getTokenBucket() {
-        print(try? self.exchange.tokenBucket)
+        print(try self.exchange.tokenBucket)
     }
     func getTrades() {
-        print(try? self.exchange.trades)
+        print(try self.exchange.trades)
     }
     func getTransactions() {
-        print(try? self.exchange.transactions)
+        print(try self.exchange.transactions)
     }
     func getTriggerOrders() {
-        print(try? self.exchange.triggerOrders)
+        print(try self.exchange.triggerOrders)
     }
     func getUrls() {
-        print(try? self.exchange.urls)
+        print(try self.exchange.urls)
     }
     func getUserAgent() {
-        print(try? self.exchange.userAgent)
+        print(try self.exchange.userAgent)
     }
     func getUserAgents() {
-        print(try? self.exchange.userAgents)
+        print(try self.exchange.userAgents)
     }
     func getVersion() {
-        print(try? self.exchange.version)
+        print(try self.exchange.version)
     }
     func setApiKey() {
         do {
@@ -2064,7 +2064,7 @@ struct ContentView: View {
 //    }
 //    func fetchMarkPrice() async {
 //         do {
-//             let response = try await self.exchange.fetchMarkPrice("BTC/USDT")
+//             let response = try await self.exchange.fetchMarkPrice(futuresSymbol)
 //             print(response)
 //         } catch {
 //             print(error.localizedDescription)

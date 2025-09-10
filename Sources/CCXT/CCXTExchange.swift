@@ -80,102 +80,99 @@ public class Exchange {
     }
     
     private func decode(_ value: Any?) throws -> Any? {
-    guard let value = value else {
-        return nil
-    }
-
-    switch value {
-    case let data as Data:
-        // Quick check for literal boolean
-        if let s = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) {
-            if s == "true" { return true }
-            if s == "false" { return false }
-            if s == "null" { return nil }
-            // NEW: also parse number-like strings here
-            if let intVal = Int(s) { return intVal }
-            if let doubleVal = Double(s) { return doubleVal }
+        guard let value = value else {
+            return nil
         }
 
-        do {
-            // Normal JSON parse
-            return try JSONSerialization.jsonObject(with: data, options: [])
-        } catch {
-            // Only attempt CCXT panic parsing if data can be UTF-8 string and matches the panic format
-            if let s = String(data: data, encoding: .utf8),
-               s.contains("[ccxtError]::[") {
+        switch value {
+        case let data as Data:
+            // Quick check for literal boolean or null
+            if var s = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) {
+                if s == "true" { return true }
+                if s == "false" { return false }
+                if s == "null" { return nil }
 
-                let segments = s.components(separatedBy: "::")
-                if segments.count >= 3 {
-                    let rawType = segments[1].trimmingCharacters(in: CharacterSet(charactersIn: "[]"))
-
-                    // Try to extract JSON message if available
-                    if let jsonStart = s.firstIndex(of: "{"),
-                       let jsonEnd = s[jsonStart...].firstIndex(of: "}") {
-                        var jsonSubstring = String(s[jsonStart...jsonEnd])
-                        jsonSubstring = jsonSubstring.replacingOccurrences(of: "\\\"", with: "\"")
-
-                        if let jsonData = jsonSubstring.data(using: .utf8),
-                           let jsonObj = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
-                            let message = (jsonObj["msg"] as? String) ??
-                                          (jsonObj["message"] as? String) ??
-                                          jsonSubstring
-
-                            if let errorClass = NSClassFromString("CCXTSwift.\(rawType)") as? BaseError.Type {
-                                throw errorClass.init(message)
-                            }
-                            throw CCXTError.exchange(message)
-                        }
-                    }
-
-                    // Plain message fallback
-                    let tail = segments.last ?? ""
-                    var plainMsg = tail.replacingOccurrences(of: "]\\nStack:\\n\"", with: "")
-                    plainMsg = plainMsg.trimmingCharacters(in: CharacterSet(charactersIn: "[]\"\n "))
-
-                    if let errorClass = NSClassFromString("CCXTSwift.\(rawType)") as? BaseError.Type {
-                        throw errorClass.init(plainMsg)
-                    }
-                    throw CCXTError.exchange(plainMsg)
-                }
-            }
-
-            // Non-panic string / invalid JSON → return string as-is
-            if let s = String(data: data, encoding: .utf8) {
-                // NEW: parse number-like strings here too
+                // Parse number-like strings
                 if let intVal = Int(s) { return intVal }
                 if let doubleVal = Double(s) { return doubleVal }
-                return s
             }
 
-            throw CCXTError.decoding(error)
-        }
+            do {
+                // Normal JSON parse
+                return try JSONSerialization.jsonObject(with: data, options: [])
+            } catch {
+                // CCXT panic parsing
+                if let s = String(data: data, encoding: .utf8), s.contains("[ccxtError]::[") {
+                    let segments = s.components(separatedBy: "::")
+                    if segments.count >= 3 {
+                        let rawType = segments[1].trimmingCharacters(in: CharacterSet(charactersIn: "[]"))
+                        if let jsonStart = s.firstIndex(of: "{"),
+                        let jsonEnd = s[jsonStart...].firstIndex(of: "}") {
+                            var jsonSubstring = String(s[jsonStart...jsonEnd])
+                            jsonSubstring = jsonSubstring.replacingOccurrences(of: "\\\"", with: "\"")
+                            if let jsonData = jsonSubstring.data(using: .utf8),
+                            let jsonObj = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
+                                let message = (jsonObj["msg"] as? String) ??
+                                            (jsonObj["message"] as? String) ??
+                                            jsonSubstring
+                                if let errorClass = NSClassFromString("CCXTSwift.\(rawType)") as? BaseError.Type {
+                                    throw errorClass.init(message)
+                                }
+                                throw CCXTError.exchange(message)
+                            }
+                        }
 
-    case let str as String:
-        // Try to parse string into number if possible
-        if let intVal = Int(str) {
-            return intVal
-        }
-        if let doubleVal = Double(str) {
-            return doubleVal
-        }
-        return str
+                        let tail = segments.last ?? ""
+                        var plainMsg = tail.replacingOccurrences(of: "]\\nStack:\\n\"", with: "")
+                        plainMsg = plainMsg.trimmingCharacters(in: CharacterSet(charactersIn: "[]\"\n "))
 
-    case let number as NSNumber:
-        if CFGetTypeID(number) == CFBooleanGetTypeID() {
-            return number.boolValue
-        } else if CFNumberIsFloatType(number) {
-            return number.doubleValue
-        } else {
-            return number.intValue
+                        if let errorClass = NSClassFromString("CCXTSwift.\(rawType)") as? BaseError.Type {
+                            throw errorClass.init(plainMsg)
+                        }
+                        throw CCXTError.exchange(plainMsg)
+                    }
+                }
+
+                // Non-panic string / invalid JSON
+                if var s = String(data: data, encoding: .utf8) {
+                    // Strip outer quotes and unescape
+                    if s.hasPrefix("\"") && s.hasSuffix("\"") {
+                        s.removeFirst()
+                        s.removeLast()
+                        s = s.replacingOccurrences(of: "\\\"", with: "\"")
+                        s = s.replacingOccurrences(of: "\\n", with: "\n")
+                    }
+                    if let intVal = Int(s) { return intVal }
+                    if let doubleVal = Double(s) { return doubleVal }
+                    return s
+                }
+
+                throw CCXTError.decoding(error)
+            }
+
+        case let str as String:
+            // Numeric conversion
+            if let intVal = Int(str) { return intVal }
+            if let doubleVal = Double(str) { return doubleVal }
+            return str
+
+        case let number as NSNumber:
+            if CFGetTypeID(number) == CFBooleanGetTypeID() {
+                return number.boolValue
+            } else if CFNumberIsFloatType(number) {
+                return number.doubleValue
+            } else {
+                return number.intValue
+            }
+
+        case let bool as Bool:
+            return bool
+
+        default:
+            return value
         }
-
-    case let bool as Bool:
-        return bool
-
-    default:
-        return value
     }
-    }
+
 
 
 
@@ -223,9 +220,7 @@ public class Exchange {
 
     public var isSandboxModeEnabled: Bool {
         get {
-            guard let propValue = try? self.exchange.getIsSandboxModeEnabled() else {
-                return false
-            }
+            let propValue = try? self.exchange.getIsSandboxModeEnabled()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Bool
             return cleaned
@@ -237,9 +232,7 @@ public class Exchange {
 
     public var api: [String: Any] {
         get {
-            guard let propValue = try? self.exchange.getApi() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getApi()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]
             return cleaned
@@ -249,9 +242,7 @@ public class Exchange {
 
     public var userAgent: String? {
         get {
-            guard let propValue = try? self.exchange.getUserAgent() else {
-                return nil
-            }
+            let propValue = try? self.exchange.getUserAgent()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! String?
             return cleaned
@@ -263,9 +254,7 @@ public class Exchange {
 
     public var userAgents: [String: String] {
         get {
-            guard let propValue = try? self.exchange.getUserAgents() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getUserAgents()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: String]
             return cleaned
@@ -278,9 +267,7 @@ public class Exchange {
 
     public var returnResponseHeaders: Bool {
         get {
-            guard let propValue = try? self.exchange.getReturnResponseHeaders() else {
-                return false
-            }
+            let propValue = try? self.exchange.getReturnResponseHeaders()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Bool
             return cleaned
@@ -292,9 +279,7 @@ public class Exchange {
 
     public var MAX_VALUE: Double {
         get {
-            guard let propValue = try? self.exchange.getMAX_VALUE() else {
-                return 0
-            }
+            let propValue = try? self.exchange.getMAX_VALUE()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Double
             return cleaned
@@ -306,9 +291,7 @@ public class Exchange {
 
     public var substituteCommonCurrencyCodes: Bool {
         get {
-            guard let propValue = try? self.exchange.getSubstituteCommonCurrencyCodes() else {
-                return false
-            }
+            let propValue = try? self.exchange.getSubstituteCommonCurrencyCodes()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Bool
             return cleaned
@@ -320,9 +303,7 @@ public class Exchange {
 
     public var reduceFees: Bool {
         get {
-            guard let propValue = try? self.exchange.getReduceFees() else {
-                return false
-            }
+            let propValue = try? self.exchange.getReduceFees()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Bool
             return cleaned
@@ -346,9 +327,7 @@ public class Exchange {
 
     public var balance: Any {
         get {
-            guard let propValue = try? self.exchange.getBalance() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getBalance()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Any
             return cleaned
@@ -361,9 +340,7 @@ public class Exchange {
 
     public var liquidations: [String: [String: Any]] {
         get {
-            guard let propValue = try? self.exchange.getLiquidations() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getLiquidations()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: [String: Any]]
             return cleaned
@@ -376,9 +353,7 @@ public class Exchange {
 
     public var orderbooks: [String: [String: Any]] {
         get {
-            guard let propValue = try? self.exchange.getOrderbooks() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getOrderbooks()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: [String: Any]]
             return cleaned
@@ -391,9 +366,7 @@ public class Exchange {
 
     public var tickers: [String: [String: Any]] {
         get {
-            guard let propValue = try? self.exchange.getTickers() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getTickers()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: [String: Any]]
             return cleaned
@@ -406,9 +379,7 @@ public class Exchange {
 
     public var fundingRates: [String: [String: Any]] {
         get {
-            guard let propValue = try? self.exchange.getFundingRates() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getFundingRates()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: [String: Any]]
             return cleaned
@@ -421,9 +392,7 @@ public class Exchange {
 
     public var bidsasks: [String: [String: Any]] {
         get {
-            guard let propValue = try? self.exchange.getBidsasks() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getBidsasks()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: [String: Any]]
             return cleaned
@@ -436,9 +405,7 @@ public class Exchange {
 
     public var orders: Any {
         get {
-            guard let propValue = try? self.exchange.getOrders() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getOrders()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Any
             return cleaned
@@ -451,9 +418,7 @@ public class Exchange {
 
     public var triggerOrders: Any {
         get {
-            guard let propValue = try? self.exchange.getTriggerOrders() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getTriggerOrders()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Any
             return cleaned
@@ -466,9 +431,7 @@ public class Exchange {
 
     public var transactions: [String: [String: Any]] {
         get {
-            guard let propValue = try? self.exchange.getTransactions() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getTransactions()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: [String: Any]]
             return cleaned
@@ -481,9 +444,7 @@ public class Exchange {
 
     public var myLiquidations: [String: [String: Any]] {
         get {
-            guard let propValue = try? self.exchange.getMyLiquidations() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getMyLiquidations()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: [String: Any]]
             return cleaned
@@ -496,9 +457,7 @@ public class Exchange {
 
     public var precision: [String: Any]? {
         get {
-            guard let propValue = try? self.exchange.getPrecision() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getPrecision()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]?
             return cleaned
@@ -511,9 +470,7 @@ public class Exchange {
 
     public var last_http_response: Any {
         get {
-            guard let propValue = try? self.exchange.getLast_http_response() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getLast_http_response()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Any
             return cleaned
@@ -526,9 +483,7 @@ public class Exchange {
 
     public var last_request_headers: [String: String] {
         get {
-            guard let propValue = try? self.exchange.getLast_request_headers() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getLast_request_headers()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: String]
             return cleaned
@@ -538,9 +493,7 @@ public class Exchange {
 
     public var last_request_body: Any {
         get {
-            guard let propValue = try? self.exchange.getLast_request_body() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getLast_request_body()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Any
             return cleaned
@@ -550,9 +503,7 @@ public class Exchange {
 
     public var last_request_url: String {
         get {
-            guard let propValue = try? self.exchange.getLast_request_url() else {
-                return ""
-            }
+            let propValue = try? self.exchange.getLast_request_url()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! String
             return cleaned
@@ -560,11 +511,34 @@ public class Exchange {
         
     }
 
+    public var lastRequestBody: Any {
+        get {
+            let propValue = try? self.exchange.getLastRequestBody()
+            let jsonObject = try! self.decode(propValue)
+            let cleaned = self.cleanAny(jsonObject)! as! Any
+            return cleaned
+        }
+        set {
+            let serialized = try? JSONSerialization.data(withJSONObject: newValue)
+            try? self.exchange.setLastRequestBody(serialized)
+        }
+    }
+
+    public var lastRequestUrl: String {
+        get {
+            let propValue = try? self.exchange.getLastRequestUrl()
+            let jsonObject = try! self.decode(propValue)
+            let cleaned = self.cleanAny(jsonObject)! as! String
+            return cleaned
+        }
+        set {
+            try? self.exchange.setLastRequestUrl(newValue as! String)
+        }
+    }
+
     public var id: String {
         get {
-            guard let propValue = try? self.exchange.getId() else {
-                return ""
-            }
+            let propValue = try? self.exchange.getId()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! String
             return cleaned
@@ -574,9 +548,7 @@ public class Exchange {
 
     public var markets: [String: Any] {
         get {
-            guard let propValue = try? self.exchange.getMarkets() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getMarkets()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]
             return cleaned
@@ -586,9 +558,7 @@ public class Exchange {
 
     public var features: [String: [String: Any]] {
         get {
-            guard let propValue = try? self.exchange.getFeatures() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getFeatures()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: [String: Any]]
             return cleaned
@@ -598,9 +568,7 @@ public class Exchange {
 
     public var rateLimit: Double {
         get {
-            guard let propValue = try? self.exchange.getRateLimit() else {
-                return 0
-            }
+            let propValue = try? self.exchange.getRateLimit()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Double
             return cleaned
@@ -612,9 +580,7 @@ public class Exchange {
 
     public var tokenBucket: [String: Double] {
         get {
-            guard let propValue = try? self.exchange.getTokenBucket() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getTokenBucket()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Double]
             return cleaned
@@ -627,9 +593,7 @@ public class Exchange {
 
     public var throttler: Any {
         get {
-            guard let propValue = try? self.exchange.getThrottler() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getThrottler()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Any
             return cleaned
@@ -646,9 +610,7 @@ public class Exchange {
 
     public var httpExceptions: [String: Any] {
         get {
-            guard let propValue = try? self.exchange.getHttpExceptions() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getHttpExceptions()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]
             return cleaned
@@ -661,9 +623,7 @@ public class Exchange {
 
     public var limits: [String: Any]? {
         get {
-            guard let propValue = try? self.exchange.getLimits() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getLimits()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]?
             return cleaned
@@ -676,9 +636,7 @@ public class Exchange {
 
     public var markets_by_id: [String: Any] {
         get {
-            guard let propValue = try? self.exchange.getMarkets_by_id() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getMarkets_by_id()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]
             return cleaned
@@ -691,9 +649,7 @@ public class Exchange {
 
     public var symbols: Strings {
         get {
-            guard let propValue = try? self.exchange.getSymbols() else {
-                return nil
-            }
+            let propValue = try? self.exchange.getSymbols()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Strings
             return cleaned
@@ -703,9 +659,7 @@ public class Exchange {
 
     public var ids: Strings {
         get {
-            guard let propValue = try? self.exchange.getIds() else {
-                return nil
-            }
+            let propValue = try? self.exchange.getIds()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Strings
             return cleaned
@@ -718,9 +672,7 @@ public class Exchange {
 
     public var currencies: [String: Any] {
         get {
-            guard let propValue = try? self.exchange.getCurrencies() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getCurrencies()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]
             return cleaned
@@ -733,9 +685,7 @@ public class Exchange {
 
     public var baseCurrencies: [String: [String: Any]] {
         get {
-            guard let propValue = try? self.exchange.getBaseCurrencies() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getBaseCurrencies()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: [String: Any]]
             return cleaned
@@ -748,9 +698,7 @@ public class Exchange {
 
     public var quoteCurrencies: [String: [String: Any]] {
         get {
-            guard let propValue = try? self.exchange.getQuoteCurrencies() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getQuoteCurrencies()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: [String: Any]]
             return cleaned
@@ -763,9 +711,7 @@ public class Exchange {
 
     public var currencies_by_id: [String: [String: Any]] {
         get {
-            guard let propValue = try? self.exchange.getCurrencies_by_id() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getCurrencies_by_id()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: [String: Any]]
             return cleaned
@@ -778,9 +724,7 @@ public class Exchange {
 
     public var codes: Strings {
         get {
-            guard let propValue = try? self.exchange.getCodes() else {
-                return nil
-            }
+            let propValue = try? self.exchange.getCodes()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Strings
             return cleaned
@@ -798,9 +742,7 @@ public class Exchange {
 
     public var accountsById: [String: [String: Any]] {
         get {
-            guard let propValue = try? self.exchange.getAccountsById() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getAccountsById()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: [String: Any]]
             return cleaned
@@ -813,9 +755,7 @@ public class Exchange {
 
     public var commonCurrencies: [String: String] {
         get {
-            guard let propValue = try? self.exchange.getCommonCurrencies() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getCommonCurrencies()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: String]
             return cleaned
@@ -828,9 +768,7 @@ public class Exchange {
 
     public var hostname: String? {
         get {
-            guard let propValue = try? self.exchange.getHostname() else {
-                return nil
-            }
+            let propValue = try? self.exchange.getHostname()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! String?
             return cleaned
@@ -840,9 +778,7 @@ public class Exchange {
 
     public var exceptions: [String: String] {
         get {
-            guard let propValue = try? self.exchange.getExceptions() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getExceptions()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: String]
             return cleaned
@@ -855,9 +791,7 @@ public class Exchange {
 
     public var timeframes: Any {
         get {
-            guard let propValue = try? self.exchange.getTimeframes() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getTimeframes()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Any
             return cleaned
@@ -867,9 +801,7 @@ public class Exchange {
 
     public var version: String? {
         get {
-            guard let propValue = try? self.exchange.getVersion() else {
-                return nil
-            }
+            let propValue = try? self.exchange.getVersion()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! String?
             return cleaned
@@ -879,9 +811,7 @@ public class Exchange {
 
     public var name: String? {
         get {
-            guard let propValue = try? self.exchange.getName() else {
-                return nil
-            }
+            let propValue = try? self.exchange.getName()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! String?
             return cleaned
@@ -893,9 +823,7 @@ public class Exchange {
 
     public var httpProxyAgentModule: Any {
         get {
-            guard let propValue = try? self.exchange.getHttpProxyAgentModule() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getHttpProxyAgentModule()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Any
             return cleaned
@@ -908,9 +836,7 @@ public class Exchange {
 
     public var httpsProxyAgentModule: Any {
         get {
-            guard let propValue = try? self.exchange.getHttpsProxyAgentModule() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getHttpsProxyAgentModule()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Any
             return cleaned
@@ -923,9 +849,7 @@ public class Exchange {
 
     public var socksProxyAgentModule: Any {
         get {
-            guard let propValue = try? self.exchange.getSocksProxyAgentModule() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getSocksProxyAgentModule()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Any
             return cleaned
@@ -938,9 +862,7 @@ public class Exchange {
 
     public var socksProxyAgentModuleChecked: Bool {
         get {
-            guard let propValue = try? self.exchange.getSocksProxyAgentModuleChecked() else {
-                return false
-            }
+            let propValue = try? self.exchange.getSocksProxyAgentModuleChecked()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Bool
             return cleaned
@@ -952,9 +874,7 @@ public class Exchange {
 
     public var proxyDictionaries: [String: Any] {
         get {
-            guard let propValue = try? self.exchange.getProxyDictionaries() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getProxyDictionaries()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]
             return cleaned
@@ -967,9 +887,7 @@ public class Exchange {
 
     public var alias: Bool {
         get {
-            guard let propValue = try? self.exchange.getAlias() else {
-                return false
-            }
+            let propValue = try? self.exchange.getAlias()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Bool
             return cleaned
@@ -979,9 +897,7 @@ public class Exchange {
 
     public var clients: [String: Any] {
         get {
-            guard let propValue = try? self.exchange.getClients() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getClients()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]
             return cleaned
@@ -994,9 +910,7 @@ public class Exchange {
 
     public var newUpdates: Bool {
         get {
-            guard let propValue = try? self.exchange.getNewUpdates() else {
-                return false
-            }
+            let propValue = try? self.exchange.getNewUpdates()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Bool
             return cleaned
@@ -1008,9 +922,7 @@ public class Exchange {
 
     public var options: [String: Any] {
         get {
-            guard let propValue = try? self.exchange.getOptions() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getOptions()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]
             return cleaned
@@ -1035,9 +947,7 @@ public class Exchange {
 
     public var login: String {
         get {
-            guard let propValue = try? self.exchange.getLogin() else {
-                return ""
-            }
+            let propValue = try? self.exchange.getLogin()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! String
             return cleaned
@@ -1061,9 +971,7 @@ public class Exchange {
 
     public var token: String {
         get {
-            guard let propValue = try? self.exchange.getToken() else {
-                return ""
-            }
+            let propValue = try? self.exchange.getToken()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! String
             return cleaned
@@ -1075,9 +983,7 @@ public class Exchange {
 
     public var trades: [String: Any] {
         get {
-            guard let propValue = try? self.exchange.getTrades() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getTrades()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]
             return cleaned
@@ -1090,9 +996,7 @@ public class Exchange {
 
     public var ohlcvs: [String: [String: Any]] {
         get {
-            guard let propValue = try? self.exchange.getOhlcvs() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getOhlcvs()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: [String: Any]]
             return cleaned
@@ -1105,9 +1009,7 @@ public class Exchange {
 
     public var myTrades: Any {
         get {
-            guard let propValue = try? self.exchange.getMyTrades() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getMyTrades()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Any
             return cleaned
@@ -1120,9 +1022,7 @@ public class Exchange {
 
     public var positions: Any {
         get {
-            guard let propValue = try? self.exchange.getPositions() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getPositions()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Any
             return cleaned
@@ -1135,9 +1035,7 @@ public class Exchange {
 
     public var has: Any {
         get {
-            guard let propValue = try? self.exchange.getHas() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getHas()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! Any
             return cleaned
@@ -1147,9 +1045,7 @@ public class Exchange {
 
     public var urls: [String: Any] {
         get {
-            guard let propValue = try? self.exchange.getUrls() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getUrls()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]
             return cleaned
@@ -1159,9 +1055,7 @@ public class Exchange {
 
     public var requiredCredentials: [String: Any] {
         get {
-            guard let propValue = try? self.exchange.getRequiredCredentials() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getRequiredCredentials()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]
             return cleaned
@@ -1171,9 +1065,7 @@ public class Exchange {
 
     public var fees: [String: Any] {
         get {
-            guard let propValue = try? self.exchange.getFees() else {
-                return [:]
-            }
+            let propValue = try? self.exchange.getFees()
             let jsonObject = try! self.decode(propValue)
             let cleaned = self.cleanAny(jsonObject)! as! [String: Any]
             return cleaned

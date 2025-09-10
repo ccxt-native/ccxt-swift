@@ -19,7 +19,7 @@ let package = Package(
             name: "CCXTCore",
             // path: "Sources/CCXTCore/CCXTCore.xcframework",  // for local development
             url: "https://github.com/ccxt-native/swift/releases/download/v0.0.2/CCXTCore.xcframework.zip",
-            checksum: "11efa2d9345d74c8e951403dece7d30c3051f5a73166d05d8184bb546a4d9246"
+            checksum: "37f8cfd9c78cb0fb275ec96e33130d599f7d2971b2dec5b522523eca5e2e28d7"
         ),
         .target(
             name: "CCXT",

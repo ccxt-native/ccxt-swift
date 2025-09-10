@@ -70,15 +70,17 @@ func sanitise(v interface{}) interface{} {
 		}
 		return x
 	case map[string]interface{}:
+		out := make(map[string]interface{}, len(x))
 		for k, vv := range x {
-			x[k] = sanitise(vv)
+			out[k] = sanitise(vv)
 		}
-		return x
+		return out
 	case []interface{}:
+		out := make([]interface{}, len(x))
 		for i, vv := range x {
-			x[i] = sanitise(vv)
+			out[i] = sanitise(vv)
 		}
-		return x
+		return out
 	default:
 		return v
 	}
@@ -487,6 +489,36 @@ func (e *CCXTGoExchange) GetLast_request_url() ([]byte, error) {
     }
 
 
+
+
+func (e *CCXTGoExchange) GetLastRequestBody() ([]byte, error) {
+        propValue := e.exchange.GetLastRequestBody()
+        sanitised := sanitise(propValue)
+        return json.Marshal(sanitised)
+    }
+
+func (e *CCXTGoExchange) SetLastRequestBody(newValue []byte) error {
+        
+        var decoded interface{}
+	    if err := json.Unmarshal(newValue, &decoded); err != nil {
+		    return err
+	    }
+        e.exchange.SetLastRequestBody(decoded)
+        return nil
+    }
+
+
+func (e *CCXTGoExchange) GetLastRequestUrl() ([]byte, error) {
+        propValue := e.exchange.GetLastRequestUrl()
+        sanitised := sanitise(propValue)
+        return json.Marshal(sanitised)
+    }
+
+func (e *CCXTGoExchange) SetLastRequestUrl(newValue string) error {
+        
+        e.exchange.SetLastRequestUrl(newValue)
+        return nil
+    }
 
 
 func (e *CCXTGoExchange) GetId() ([]byte, error) {
@@ -1177,11 +1209,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.LoadMarkets(reload, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1195,11 +1236,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchCurrencies(decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1213,11 +1263,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchMarkets(decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1239,11 +1298,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchAccounts(decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1276,11 +1344,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchTrades(symbol, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1303,11 +1380,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchDepositAddresses(codes, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1330,11 +1416,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchOrderBook(symbol, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1348,11 +1443,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchMarginMode(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1375,11 +1479,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchMarginModes(symbols, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1393,11 +1506,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchTime(decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1420,11 +1542,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchTradingLimits(symbols, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1438,11 +1569,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchCrossBorrowRates(decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1456,11 +1596,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchIsolatedBorrowRates(decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1483,11 +1632,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchLeverageTiers(symbols, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1510,11 +1668,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchFundingRates(symbols, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1537,11 +1704,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchFundingIntervals(symbols, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1555,11 +1731,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.Transfer(code, amount, fromAccount, toAccount, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1582,11 +1767,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.Withdraw(code, amount, address, tag, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1600,11 +1794,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateDepositAddress(code, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1627,11 +1830,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.SetLeverage(leverage, symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1645,11 +1857,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchLeverage(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1672,11 +1893,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchLeverages(symbols, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1699,11 +1929,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.SetPositionMode(hedged, symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1717,11 +1956,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.AddMargin(symbol, amount, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1735,11 +1983,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.ReduceMargin(symbol, amount, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1753,11 +2010,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.SetMargin(symbol, amount, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1780,11 +2046,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchLongShortRatio(symbol, timeframe, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1837,11 +2112,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchLongShortRatioHistory(symbol, timeframe, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1894,11 +2178,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchMarginAdjustmentHistory(symbol, typeVar, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1921,11 +2214,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.SetMarginMode(marginMode, symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1939,11 +2241,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchDepositAddressesByNetwork(code, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1976,11 +2287,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchOpenInterestHistory(symbol, timeframe, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -1994,11 +2314,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchOpenInterest(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2021,11 +2350,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchOpenInterests(symbols, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2039,11 +2377,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.SignIn(decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2057,11 +2404,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchBorrowRate(code, amount, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2075,11 +2431,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.RepayCrossMargin(code, amount, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2093,11 +2458,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.RepayIsolatedMargin(symbol, code, amount, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2111,11 +2485,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.BorrowCrossMargin(code, amount, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2129,11 +2512,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.BorrowIsolatedMargin(symbol, code, amount, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2156,11 +2548,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.BorrowMargin(code, amount, symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2193,11 +2594,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchOHLCV(symbol, timeframe, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2220,11 +2630,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchL2OrderBook(symbol, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2257,11 +2676,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.EditOrder(id, symbol, typeVar, side, amount, price, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2275,11 +2703,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchPosition(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2293,11 +2730,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchPositionsForSymbol(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2320,11 +2766,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchPositions(symbols, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2347,11 +2802,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchPositionsRisk(symbols, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2374,11 +2838,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchBidsAsks(symbols, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2431,11 +2904,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchBorrowInterest(code, symbol, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2478,11 +2960,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchLedger(code, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2505,11 +2996,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchLedgerEntry(id, code, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2523,11 +3023,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchBalance(decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2541,11 +3050,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchStatus(decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2559,11 +3077,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchTransactionFee(code, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2586,11 +3113,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchTransactionFees(codes, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2604,11 +3140,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchDepositWithdrawFee(code, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2622,11 +3167,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchCrossBorrowRate(code, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2640,11 +3194,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchIsolatedBorrowRate(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2658,11 +3221,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchTicker(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2685,11 +3257,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchTickers(symbols, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2712,11 +3293,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchMarkPrices(symbols, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2749,11 +3339,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchOrderBooks(symbols, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2776,11 +3375,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchOrder(id, symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2803,11 +3411,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateOrder(symbol, typeVar, side, amount, price, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2830,11 +3447,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchConvertTrade(id, code, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2877,11 +3503,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchConvertTradeHistory(code, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2904,11 +3539,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchPositionMode(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2951,11 +3595,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateTrailingAmountOrder(symbol, typeVar, side, amount, price, trailingAmount, trailingTriggerPrice, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -2998,11 +3651,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateTrailingPercentOrder(symbol, typeVar, side, amount, price, trailingPercent, trailingTriggerPrice, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3016,11 +3678,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateMarketOrderWithCost(symbol, side, cost, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3034,11 +3705,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateMarketBuyOrderWithCost(symbol, cost, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3052,11 +3732,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateMarketSellOrderWithCost(symbol, cost, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3089,11 +3778,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateTriggerOrder(symbol, typeVar, side, amount, price, triggerPrice, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3126,11 +3824,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateStopLossOrder(symbol, typeVar, side, amount, price, stopLossPrice, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3163,11 +3870,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateTakeProfitOrder(symbol, typeVar, side, amount, price, takeProfitPrice, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3210,11 +3926,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateOrderWithTakeProfitAndStopLoss(symbol, typeVar, side, amount, price, takeProfit, stopLoss, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3237,11 +3962,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CancelOrder(id, symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3264,11 +3998,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CancelAllOrders(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3311,11 +4054,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchOrders(symbol, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3358,11 +4110,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchOrderTrades(id, symbol, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3405,11 +4166,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchOpenOrders(symbol, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3452,11 +4222,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchClosedOrders(symbol, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3499,11 +4278,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchCanceledAndClosedOrders(symbol, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3546,11 +4334,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchMyTrades(symbol, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3593,11 +4390,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchMyLiquidations(symbol, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3630,11 +4436,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchLiquidations(symbol, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3648,11 +4463,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchGreeks(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3666,11 +4490,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchOptionChain(code, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3684,11 +4517,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchOption(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3711,11 +4553,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchConvertQuote(fromCode, toCode, amount, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3758,11 +4609,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchDepositsWithdrawals(code, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3805,11 +4665,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchDeposits(code, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3852,11 +4721,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchWithdrawals(code, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3899,11 +4777,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchFundingRateHistory(symbol, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3946,11 +4833,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchFundingHistory(symbol, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3973,11 +4869,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.ClosePosition(symbol, side, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -3991,11 +4896,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CloseAllPositions(decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4018,11 +4932,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchL3OrderBook(symbol, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4036,11 +4959,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchDepositAddress(code, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4054,11 +4986,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateLimitOrder(symbol, side, amount, price, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4081,11 +5022,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateMarketOrder(symbol, side, amount, price, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4099,11 +5049,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateLimitBuyOrder(symbol, amount, price, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4117,11 +5076,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateLimitSellOrder(symbol, amount, price, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4135,11 +5103,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateMarketBuyOrder(symbol, amount, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4153,11 +5130,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateMarketSellOrder(symbol, amount, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4171,11 +5157,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchMarketLeverageTiers(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4198,11 +5193,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreatePostOnlyOrder(symbol, typeVar, side, amount, price, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4225,11 +5229,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateReduceOnlyOrder(symbol, typeVar, side, amount, price, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4262,11 +5275,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateStopOrder(symbol, typeVar, side, amount, price, triggerPrice, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4280,11 +5302,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateStopLimitOrder(symbol, side, amount, price, triggerPrice, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4298,11 +5329,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.CreateStopMarketOrder(symbol, side, amount, triggerPrice, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4325,11 +5365,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchLastPrices(symbols, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4343,11 +5392,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchTradingFees(decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4361,11 +5419,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchTradingFee(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4379,11 +5446,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchConvertCurrencies(decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4397,11 +5473,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchFundingRate(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4415,11 +5500,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchFundingInterval(symbol, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4452,11 +5546,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchMarkOHLCV(symbol, timeframe, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4489,11 +5592,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchIndexOHLCV(symbol, timeframe, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4526,11 +5638,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchPremiumIndexOHLCV(symbol, timeframe, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4573,11 +5694,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchTransactions(code, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4610,11 +5740,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchPositionHistory(symbol, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4657,11 +5796,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchPositionsHistory(symbols, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4684,11 +5832,20 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchTransfer(id, code, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
 
@@ -4731,10 +5888,19 @@ func (e *CCXTGoExchange) SetFees(newValue []byte) error {
         
         
         res := <-e.exchange.FetchTransfers(code, since, limit, decoded)
-        if err, ok := res.(error); ok {
+        switch v := res.(type) {
+        case string:
+            if strings.HasPrefix(v, "panic:") {
+                return nil, fmt.Errorf("%s", v)
+            }
+        case error:
+            return nil, v
+        }
+        sanitised := sanitise(res) // deep copy; no in-place mutation
+        b, err := json.Marshal(sanitised)
+        if err != nil {
             return nil, err
         }
-        sanitised := sanitise(res)
-        return json.Marshal(sanitised)
+        return b, nil
         
     }
