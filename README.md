@@ -10,32 +10,36 @@ The wrapper is packaged as a **Swift Package**:
 - `CCXTSwiftCore` → XCFramework (CCXT.xcframework) generated from Go via gomobile bind
 - `CCXTSwift` → Swift wrapper (CCXTExchange.swift) → depends on `CCXTSwiftCore`
 
+---
+
+# SWIFT
+
 ## Installation
 
-### Swift
+From the Xcode menu, select
 
-Add the following to your Package.swift 
+    File > Add Package Dependencies
 
-```swift
-dependencies: [
-    // Existing dependencies...
-    .package(url: "https://github.com/ccxt-native/swift", from: "1.0.0"),
-],
-targets: [
-    targets: [
-        .target(
-            name: "YOUR_APP_NAME",
-            dependencies: [
-                .product(name: "CCXT", package: "swift")
-            ]
-        )
-    ]
-]
-```
+![img showing File > Add Package Dependencies](./docs/imgs/file-add-package-dependencies.png)
 
-### Android
+And in the search bar in the top right, enter https://github.com/ccxt-native/ccxt-swift.git
 
-Soon
+![img showing File > Add Package Dependencies](./docs/imgs/add-ccxt-swift.png)
+
+And click "Add Package" in the bottom right
+
+Then select "Add To Target" and select your project
+
+![img showing Add To Target](./docs/imgs/add-to-target.png)
+
+
+## Using CCXT
+
+Inside `Source/CCXT/Example.swift` there are examples of how to instantiate an exchange, use it's methods and access it's properties using Swift
+
+For further explanation on CCXT you can refer to the [CCXT docs](https://docs.ccxt.com/#/)
+
+---
 
 # CCXT – CryptoCurrency eXchange Trading Library
 
